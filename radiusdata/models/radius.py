@@ -9,7 +9,7 @@ class RadiusUser(BaseModel):
     Result model for a single RADIUS user.
     """
     username: str
-    password: Union[str, None] = None
+    password: str
     ip_address: Union[ipaddress.IPv4Address, None] = None
     routes: Union[List[ipaddress.IPv4Network], None] = None
     rate_limit: Union[str, None] = None
