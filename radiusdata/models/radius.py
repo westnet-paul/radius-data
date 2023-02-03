@@ -1,3 +1,4 @@
+import datetime
 import ipaddress
 from pydantic import BaseModel, validator
 import re
@@ -26,3 +27,18 @@ class RadiusUser(BaseModel):
             return None
         assert re.match(r"^\d+[kM]\/\d+[kM]$", value)
         return value
+
+
+class RadiusSession(BaseModel):
+    """
+    Details of a RADIUS accounting session.
+    """
+    username: str
+    start_time: datetime.datetime
+    stop_time: Union[datetime.datetime, None] = None
+    session_time: Union[datetime.timedelta, None] = None
+    upload_bytes: int = 0
+    download_bytes: int = 0
+    terminated: Union[str, None] = None
+    ip_address: Union[ipaddress.IPv4Address, None] = None
+    mac_address: str = ""
