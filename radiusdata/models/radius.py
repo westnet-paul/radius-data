@@ -5,6 +5,11 @@ import re
 from typing import List, Union
 
 
+class NAS(BaseModel):
+    ip_address: ipaddress.IPv4Address
+    short_name: str
+
+
 class RadiusUser(BaseModel):
     """
     Result model for a single RADIUS user.
@@ -35,6 +40,7 @@ class RadiusSession(BaseModel):
     """
     username: str
     start_time: datetime.datetime
+    update_time: Union[datetime.datetime, None] = None
     stop_time: Union[datetime.datetime, None] = None
     session_time: Union[datetime.timedelta, None] = None
     upload_bytes: int = 0
@@ -42,6 +48,9 @@ class RadiusSession(BaseModel):
     terminated: Union[str, None] = None
     ip_address: Union[ipaddress.IPv4Address, None] = None
     mac_address: str = ""
+    nas: Union[NAS, None] = None
+    port: str = ""
+    service: str = ""
 
 
 class RadiusSessions(BaseModel):

@@ -11,6 +11,7 @@ def test_required():
 
 def test_defaults():
     rs = RadiusSession(username="test", start_time=datetime.datetime.utcnow())
+    assert rs.update_time is None
     assert rs.stop_time is None
     assert rs.session_time is None
     assert rs.upload_bytes == 0
@@ -18,6 +19,9 @@ def test_defaults():
     assert rs.terminated is None
     assert rs.ip_address is None
     assert rs.mac_address == ""
+    assert rs.nas is None
+    assert rs.port == ""
+    assert rs.service == ""
 
 
 def test_list():

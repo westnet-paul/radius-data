@@ -1,1 +1,1 @@
-from .models.radius import RadiusUser, RadiusSession, RadiusSessions
+from .models.radius import NAS, RadiusUser, RadiusSession, RadiusSessions
