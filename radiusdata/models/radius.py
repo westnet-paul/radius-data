@@ -42,3 +42,11 @@ class RadiusSession(BaseModel):
     terminated: Union[str, None] = None
     ip_address: Union[ipaddress.IPv4Address, None] = None
     mac_address: str = ""
+
+
+class RadiusSessions(BaseModel):
+    """
+    A list of RADIUS sessions, with an indication of whether more are available.
+    """
+    sessions: List[RadiusSession]
+    more: bool

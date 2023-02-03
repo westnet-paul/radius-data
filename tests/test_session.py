@@ -1,7 +1,7 @@
 import datetime
 from pydantic import ValidationError
 import pytest
-from radiusdata import RadiusSession
+from radiusdata import RadiusSession, RadiusSessions
 
 
 def test_required():
@@ -18,3 +18,14 @@ def test_defaults():
     assert rs.terminated is None
     assert rs.ip_address is None
     assert rs.mac_address == ""
+
+
+def test_list():
+    rss = RadiusSessions(
+        sessions=[
+            RadiusSession(username="test", start_time=datetime.datetime.utcnow())
+            for _ in range(3)
+        ], more=True
+    )
+    assert len(rss.sessions) == 3
+    assert rss.more
