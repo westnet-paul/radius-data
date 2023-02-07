@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 import ipaddress
 from pydantic import BaseModel, validator
 import re
@@ -59,3 +60,29 @@ class RadiusSessions(BaseModel):
     """
     sessions: List[RadiusSession]
     more: bool
+
+
+class PeriodEnum(Enum):
+    month = "month"
+    day = "day"
+    hour = "hour"
+    fiveminute = "fiveminute"
+
+
+class TrafficEntry(BaseModel):
+    """
+    Upload and download totals for a period with a specific beginning timestamp.
+    The length of the period depends what was asked for - could be an hour,
+    a day, or a month.
+    """
+    start: datetime.datetime
+    upload: int
+    download: int
+
+
+class Traffic(BaseModel):
+    """
+    A list of up to 24, 31 or 12 traffic entries.
+    """
+    period: PeriodEnum
+    traffic: List[TrafficEntry]
