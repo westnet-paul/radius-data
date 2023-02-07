@@ -84,5 +84,6 @@ class Traffic(BaseModel):
     """
     A list of up to 24, 31 or 12 traffic entries.
     """
+    username: str
     period: PeriodEnum
     traffic: List[TrafficEntry]
