@@ -1,8 +1,7 @@
 import datetime
 from pydantic import ValidationError
 import pytest
-from radiusdata import TrafficEntry, Traffic
-from radiusdata.models.radius import PeriodEnum
+from radiusdata import TrafficEntry, Traffic, PeriodEnum
 
 
 def test_required():
