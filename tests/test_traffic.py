@@ -15,11 +15,11 @@ def test_required():
         download=0,
     )
     assert e
-    t = Traffic(period=PeriodEnum.month, traffic=[e])
+    t = Traffic(username="test", period=PeriodEnum.month, traffic=[e])
     assert t
 
 
 def test_enum():
     with pytest.raises(ValidationError):
-        _ = Traffic(period="invalid", traffic=[])
-    assert Traffic(period=PeriodEnum.month, traffic=[])
+        _ = Traffic(username="test", period="invalid", traffic=[])
+    assert Traffic(username="test", period=PeriodEnum.month, traffic=[])

@@ -35,6 +35,14 @@ class RadiusUser(BaseModel):
         return value
 
 
+class RadiusUsers(BaseModel):
+    """
+    A list of users, and a flag to indicate that more are available.
+    """
+    users: List[RadiusUser]
+    more: bool = False
+
+
 class RadiusSession(BaseModel):
     """
     Details of a RADIUS accounting session.

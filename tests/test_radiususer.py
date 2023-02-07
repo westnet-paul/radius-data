@@ -1,7 +1,7 @@
 import ipaddress
 from pydantic import ValidationError
 import pytest
-from radiusdata import RadiusUser
+from radiusdata import RadiusUser, RadiusUsers
 
 
 def test_required():
@@ -63,3 +63,19 @@ def test_rate_limits():
         _ = RadiusUser(username="user", password="secret", rate_limit="Residential")
     assert RadiusUser(username="user", password="secret", rate_limit="1M/4M")
     assert RadiusUser(username="user", password="secret", rate_limit="512k/4M")
+
+
+def test_list():
+    # Missing required user list.
+    with pytest.raises(ValidationError):
+        _ = RadiusUsers()
+    # Invalid list type.
+    with pytest.raises(ValidationError):
+        _ = RadiusUsers(users=["invalid"])
+    # Empty list is fine.
+    assert RadiusUsers(users=[])
+    # List of actual RadiusUsers is good too.
+    assert RadiusUsers(
+        users=[RadiusUser(username=f"test{n}", password="secret") for n in range(20)],
+        more=True,
+    )
