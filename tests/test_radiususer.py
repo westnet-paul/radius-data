@@ -1,7 +1,8 @@
+import datetime
 import ipaddress
 from pydantic import ValidationError
 import pytest
-from radiusdata import RadiusUser, RadiusUsers
+from radiusdata import RadiusUser, RadiusUsers, RadiusSession
 
 
 def test_required():
@@ -79,3 +80,28 @@ def test_list():
         users=[RadiusUser(username=f"test{n}", password="secret") for n in range(20)],
         more=True,
     )
+
+
+def test_with_active_session():
+
+    # The active_session has to actually be a RadiusSession.
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(username="user", password="secret", active_session="invalid")
+
+    # The RadiusSession username has to match the RadiusUser's.
+    session = RadiusSession(username="other_user", start_time=datetime.datetime.now())
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(username="user", password="secret", active_session=session)
+
+    # The RadiusSession has to be active.
+    session = RadiusSession(
+        username="user",
+        start_time=datetime.datetime.now() - datetime.timedelta(hours=1),
+        stop_time=datetime.datetime.now(),
+    )
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(username="user", password="secret", active_session=session)
+
+    # All valid.
+    session = RadiusSession(username="user", start_time=datetime.datetime.now())
+    assert RadiusUser(username="user", password="secret", active_session=session)
