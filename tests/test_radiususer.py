@@ -20,13 +20,27 @@ def test_minimum():
 
 def test_bad_address():
     with pytest.raises(ValidationError):
-        _ = RadiusUser(username="user", password="secret", ip_address="invalid")
+        _ = RadiusUser(username="user", password="secret", ip_address="2a02:3d8::1")
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(username="user", password="secret", ipv6_address="1.2.3.4")
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(
+            username="user", password="secret", delegated_prefix="1.2.3.4/30"
+        )
 
 
 def test_address_formats():
     ru1 = RadiusUser(username="user1", password="secret", ip_address="1.2.3.4")
     ru2 = RadiusUser(
         username="user2", password="secret", ip_address=ipaddress.IPv4Address("1.2.3.4")
+    )
+    assert ru1.ip_address == ru2.ip_address
+
+    ru1 = RadiusUser(username="user1", password="secret", ipv6_address="2a02:3d8::0:1")
+    ru2 = RadiusUser(
+        username="user2",
+        password="secret",
+        ipv6_address=ipaddress.IPv6Address("2a02:3d8:0::1"),
     )
     assert ru1.ip_address == ru2.ip_address
 
@@ -38,9 +52,16 @@ def test_route_formats():
     with pytest.raises(ValidationError):
         ru = RadiusUser(username="user", password="secret", routes=["test"])
 
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", delegated_prefix="test")
+
     # Subtlety: check that the CIDR boundary is valid.
     with pytest.raises(ValidationError):
         ru = RadiusUser(username="user", password="secret", routes=["1.2.3.5/30"])
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(
+            username="user", password="secret", delegated_prefix="2a02:3d8:1::1/56"
+        )
 
     ru = RadiusUser(username="user", password="secret", routes=[])
     assert not ru.routes
@@ -49,8 +70,10 @@ def test_route_formats():
         username="user",
         password="secret",
         routes=["1.2.3.4/30", ipaddress.IPv4Network("1.2.3.4/30")],
+        delegated_prefix="2a02:3d8:1::0/56"
     )
     assert ru.routes[0] == ru.routes[1]
+    assert ru.delegated_prefix == ipaddress.IPv6Network("2a02:3d8:1:0::/56")
 
 
 def test_no_rate_limit():

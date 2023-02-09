@@ -50,6 +50,8 @@ class RadiusUser(BaseModel):
     disabled: bool = False
     suspended: bool = False
     profile: Union[str, None] = None
+    ipv6_address: Union[ipaddress.IPv6Address, None] = None
+    delegated_prefix: Union[ipaddress.IPv6Network, None] = None
 
     active_session: Union[RadiusSession, None] = None
 
