@@ -15,6 +15,7 @@ class RadiusSession(BaseModel):
     """
     Details of a RADIUS accounting session.
     """
+    id: str
     username: str
     start_time: datetime.datetime
     update_time: Union[datetime.datetime, None] = None

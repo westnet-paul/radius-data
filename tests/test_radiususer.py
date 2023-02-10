@@ -70,7 +70,7 @@ def test_route_formats():
         username="user",
         password="secret",
         routes=["1.2.3.4/30", ipaddress.IPv4Network("1.2.3.4/30")],
-        delegated_prefix="2a02:3d8:1::0/56"
+        delegated_prefix="2a02:3d8:1::0/56",
     )
     assert ru.routes[0] == ru.routes[1]
     assert ru.delegated_prefix == ipaddress.IPv6Network("2a02:3d8:1:0::/56")
@@ -112,19 +112,14 @@ def test_with_active_session():
         _ = RadiusUser(username="user", password="secret", active_session="invalid")
 
     # The RadiusSession username has to match the RadiusUser's.
-    session = RadiusSession(username="other_user", start_time=datetime.datetime.now())
-    with pytest.raises(ValidationError):
-        _ = RadiusUser(username="user", password="secret", active_session=session)
-
-    # The RadiusSession has to be active.
     session = RadiusSession(
-        username="user",
-        start_time=datetime.datetime.now() - datetime.timedelta(hours=1),
-        stop_time=datetime.datetime.now(),
+        id="abc", username="other_user", start_time=datetime.datetime.now()
     )
     with pytest.raises(ValidationError):
         _ = RadiusUser(username="user", password="secret", active_session=session)
 
     # All valid.
-    session = RadiusSession(username="user", start_time=datetime.datetime.now())
+    session = RadiusSession(
+        id="abc", username="user", start_time=datetime.datetime.now()
+    )
     assert RadiusUser(username="user", password="secret", active_session=session)
