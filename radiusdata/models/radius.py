@@ -70,11 +70,9 @@ class RadiusUser(BaseModel):
     def valid_active_session(cls, values):
         username = values.get("username")
         session = values.get("active_session")
-        # If there's an active session, it needs to be for the right user and
-        # it can't have a stop time.
+        # If there's an active session, it needs to be for the right user.
         if username and session:
             assert session.username == username
-            assert session.stop_time is None
 
         return values
 
