@@ -7,4 +7,6 @@ from .models.radius import (
     Traffic,
     TrafficEntry,
     PeriodEnum,
+    NASSessions,
+    AllSessions,
 )

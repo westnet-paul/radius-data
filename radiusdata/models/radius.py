@@ -111,3 +111,77 @@ class Traffic(BaseModel):
     username: str
     period: PeriodEnum
     traffic: List[TrafficEntry]
+
+
+class FrequentUser(BaseModel):
+    """
+    The number of times a given user has logged in in the past 24 hours.
+    """
+    username: str
+    count: int
+
+
+class FrequentUsers(BaseModel):
+    """
+    A collection of `FrequentUser`s.
+    """
+    users: List[FrequentUser]
+
+
+class NASSessions(BaseModel):
+    """
+    The number of active sessions on a given NAS.
+    """
+    nas: NAS
+    sessions: int
+
+
+class AllSessions(BaseModel):
+    """
+    All NAS with their session counts.
+    """
+    servers: List[NASSessions]
+
+
+class RareUser(BaseModel):
+    """
+    A user that hasn't logged in recently, if ever.
+    """
+    username: str
+    ip_address: ipaddress.IPv4Address
+    last_login: Union[datetime.datetime, None]
+
+
+class RareUsers(BaseModel):
+    """
+    A collection of `RareUser`s.
+    """
+    users: List[RareUser]
+
+
+class SessionList(BaseModel):
+    """
+    A list of IDs extracted from `RadiusSessions` for including in a request
+    body (no need to send the complete objects).
+    """
+    ids: List[str]
+
+
+class TopTrafficEntry(BaseModel):
+    """
+    An entry in a list of heavy users.
+    """
+
+    # The username is None for percentile values.
+    username: Union[str, None] = None
+    download: int
+    upload: int
+
+
+class TopTraffic(BaseModel):
+    """
+    A list of the top-n heavy users, as well as 95th and 80th percentile values.
+    """
+    entries: List[TopTrafficEntry]
+    pct95: TopTrafficEntry
+    pct80: TopTrafficEntry
