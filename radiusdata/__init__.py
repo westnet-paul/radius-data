@@ -1,5 +1,7 @@
 from .models.radius import (
     AllSessions,
+    FrequentUser,
+    FrequentUsers,
     NAS,
     NASSessions,
     PeriodEnum,
