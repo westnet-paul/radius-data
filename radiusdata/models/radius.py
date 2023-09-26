@@ -53,6 +53,7 @@ class RadiusUser(BaseModel):
     profile: Union[str, None] = None
     ipv6_address: Union[ipaddress.IPv6Address, None] = None
     delegated_prefix: Union[ipaddress.IPv6Network, None] = None
+    vrf: Union[str, None] = None
 
     active_session: Union[RadiusSession, None] = None
 
