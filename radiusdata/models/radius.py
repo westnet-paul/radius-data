@@ -30,6 +30,13 @@ class RadiusSession(BaseModel):
     port: str = ""
     service: str = ""
 
+    # The remaining fields are populated only for the active session.
+    authdate: Union[datetime.datetime, None] = None
+    adsl_agent_circuit_id: Union[str, None] = None
+    adsl_agent_remote_id: Union[str, None] = None
+    calling_station: Union[str, None] = None
+    called_station: Union[str, None] = None
+
 
 class RadiusSessions(BaseModel):
     """
