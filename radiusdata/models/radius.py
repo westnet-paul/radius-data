@@ -46,6 +46,19 @@ class RadiusSessions(BaseModel):
     more: bool
 
 
+class RateLimit(BaseModel):
+    """
+    A rate limit consists of an upload and a download speed.
+    """
+    download: str
+    upload: str
+
+    @validator("download", "upload")
+    def valid_rate_limit(cls, value):
+        assert re.match(r"^\d+[kM]$", value)
+        return value
+
+
 class RadiusUser(BaseModel):
     """
     Result model for a single RADIUS user.
@@ -54,7 +67,7 @@ class RadiusUser(BaseModel):
     password: str
     ip_address: Union[ipaddress.IPv4Address, None] = None
     routes: Union[List[ipaddress.IPv4Network], None] = None
-    rate_limit: Union[str, None] = None
+    rate_limit: Union[RateLimit, None] = None
     disabled: bool = False
     suspended: bool = False
     profile: Union[str, None] = None
@@ -65,15 +78,6 @@ class RadiusUser(BaseModel):
     active_session: Union[RadiusSession, None] = None
 
     error: Union[str, None] = None
-
-    @validator("rate_limit")
-    def valid_rate_limit(cls, value):
-        # Normalise empty values to None.
-        if not value:
-            return None
-        assert re.match(r"^\d+[kM]\/\d+[kM]$", value)
-
-        return value
 
     @root_validator
     def valid_active_session(cls, values):

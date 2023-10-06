@@ -77,16 +77,39 @@ def test_route_formats():
 
 
 def test_no_rate_limit():
-    ru1 = RadiusUser(username="test1", password="secret", rate_limit="")
+    # ru1 = RadiusUser(username="test1", password="secret", rate_limit="")
     ru2 = RadiusUser(username="test2", password="secret", rate_limit=None)
-    assert ru1.rate_limit is ru2.rate_limit is None
+    # assert ru1.rate_limit is ru2.rate_limit is None
+    assert ru2.rate_limit is None
 
 
 def test_rate_limits():
     with pytest.raises(ValidationError):
         _ = RadiusUser(username="user", password="secret", rate_limit="Residential")
-    assert RadiusUser(username="user", password="secret", rate_limit="1M/4M")
-    assert RadiusUser(username="user", password="secret", rate_limit="512k/4M")
+    # assert RadiusUser(username="user", password="secret", rate_limit="1M/4M")
+    # assert RadiusUser(username="user", password="secret", rate_limit="512k/4M")
+    assert RadiusUser(
+        username="user",
+        password="secret",
+        rate_limit={"download": "4M", "upload": "1M"},
+    )
+    assert RadiusUser(
+        username="user",
+        password="secret",
+        rate_limit={"download": "4M", "upload": "512k"},
+    )
+    # Missing a value
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(
+            username="user", password="secret", rate_limit={"download": "1M"}
+        )
+    # Invalid value
+    with pytest.raises(ValidationError):
+        _ = RadiusUser(
+            username="user",
+            password="secret",
+            rate_limit={"download": "10M", "upload": "whatevs"},
+        )
 
 
 def test_list():
