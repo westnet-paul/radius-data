@@ -1,5 +1,6 @@
 from .models.radius import (
     AllSessions,
+    FreeAddress,
     FrequentUser,
     FrequentUsers,
     NAS,
