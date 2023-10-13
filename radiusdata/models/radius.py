@@ -197,3 +197,11 @@ class TopTraffic(BaseModel):
     entries: List[TopTrafficEntry]
     pct95: TopTrafficEntry
     pct80: TopTrafficEntry
+
+
+class FreeAddress(BaseModel):
+    """
+    A spare IP address (if any), and the number of available addresses.
+    """
+    address: Union[ipaddress.IPv4Address, None]
+    free: int
