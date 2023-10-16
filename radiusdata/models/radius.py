@@ -205,3 +205,19 @@ class FreeAddress(BaseModel):
     """
     address: Union[ipaddress.IPv4Address, None]
     free: int
+
+
+class AddressUsage(BaseModel):
+    """
+    How (or whether) an IP address is allocated.
+    """
+    address: ipaddress.IPv4Address
+    username: Union[str, None] = None
+    subnet: Union[ipaddress.IPv4Network, None] = None
+
+
+class NetworkUsage(BaseModel):
+    """
+    How the addresses in a CIDR network are allocated.
+    """
+    addresses: List[AddressUsage]

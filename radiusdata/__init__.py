@@ -1,10 +1,12 @@
 from .models.radius import (
+    AddressUsage,
     AllSessions,
     FreeAddress,
     FrequentUser,
     FrequentUsers,
     NAS,
     NASSessions,
+    NetworkUsage,
     PeriodEnum,
     RadiusUser,
     RadiusUsers,
