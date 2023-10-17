@@ -214,6 +214,9 @@ class AddressUsage(BaseModel):
     address: ipaddress.IPv4Address
     username: Union[str, None] = None
     subnet: Union[ipaddress.IPv4Network, None] = None
+    # Age: number of days since last logged in. Zero means logged in now;
+    # None means 'never'.
+    age: Union[int, None] = None
 
 
 class NetworkUsage(BaseModel):
