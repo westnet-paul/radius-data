@@ -224,3 +224,21 @@ class NetworkUsage(BaseModel):
     How the addresses in a CIDR network are allocated.
     """
     addresses: List[AddressUsage]
+
+
+class SNMPDetails(BaseModel):
+    """
+    Realtime throughput data is retrieved through SNMP for performance reasons.
+    This is done through the snmp-service microservice, but first we need to
+    know the NAS address and relevant OIDs. This model contains those details.
+
+    Depending on the NAS type, the OIDs will either return actual 1-second
+    throughput data (Juniper), or interface counters (Mikrotik).
+    """
+
+    nas: NAS
+    rate: bool
+    bytes_in: Union[str, None] = None
+    bytes_out: Union[str, None] = None
+    packets_in: Union[str, None] = None
+    packets_out: Union[str, None] = None
