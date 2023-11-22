@@ -230,13 +230,16 @@ class SNMPDetails(BaseModel):
     """
     Realtime throughput data is retrieved through SNMP for performance reasons.
     This is done through the snmp-service microservice, but first we need to
-    know the NAS address and relevant OIDs. This model contains those details.
+    know the relevant OIDs. This model contains those details.
+
+    (We also need to know the NAS address, but the assumption is that that has
+    already been determined before looking for OIDs.)
 
     Depending on the NAS type, the OIDs will either return actual 1-second
-    throughput data (Juniper), or interface counters (Mikrotik).
+    throughput data (Juniper: rate=True), or interface counters (Mikrotik:
+    rate=False).
     """
 
-    nas: NAS
     rate: bool
     bytes_in: Union[str, None] = None
     bytes_out: Union[str, None] = None
