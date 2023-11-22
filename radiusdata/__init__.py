@@ -15,6 +15,7 @@ from .models.radius import (
     RareUser,
     RareUsers,
     SessionList,
+    SNMPDetails,
     TopTrafficEntry,
     TopTraffic,
     Traffic,
