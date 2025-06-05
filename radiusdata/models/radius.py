@@ -171,6 +171,7 @@ class RareUser(BaseModel):
     username: str
     ip_address: ipaddress.IPv4Address
     last_login: Union[datetime.datetime, None]
+    last_logout: Union[datetime.datetime, None]
 
 
 class RareUsers(BaseModel):
