@@ -10,7 +10,9 @@ def test_required():
 
 
 def test_defaults():
-    rs = RadiusSession(id="abc", username="test", start_time=datetime.datetime.utcnow())
+    rs = RadiusSession(
+        id="abc", username="test", start_time=datetime.datetime.now(datetime.UTC)
+    )
     assert rs.update_time is None
     assert rs.stop_time is None
     assert rs.session_time is None
@@ -28,7 +30,9 @@ def test_list():
     rss = RadiusSessions(
         sessions=[
             RadiusSession(
-                id=f"abc{n}", username="test", start_time=datetime.datetime.utcnow()
+                id=f"abc{n}",
+                username="test",
+                start_time=datetime.datetime.now(datetime.UTC),
             )
             for n in range(3)
         ],
