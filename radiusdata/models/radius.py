@@ -3,7 +3,6 @@ from enum import Enum
 import ipaddress
 from pydantic import BaseModel, field_validator, model_validator
 import re
-from typing import List, Union
 
 
 class NAS(BaseModel):
@@ -19,24 +18,24 @@ class RadiusSession(BaseModel):
     id: str
     username: str
     start_time: datetime.datetime
-    update_time: Union[datetime.datetime, None] = None
-    stop_time: Union[datetime.datetime, None] = None
-    session_time: Union[datetime.timedelta, None] = None
+    update_time: datetime.datetime | None = None
+    stop_time: datetime.datetime | None = None
+    session_time: datetime.timedelta | None = None
     upload_bytes: int = 0
     download_bytes: int = 0
-    terminated: Union[str, None] = None
-    ip_address: Union[ipaddress.IPv4Address, None] = None
+    terminated: str | None = None
+    ip_address: ipaddress.IPv4Address | None = None
     mac_address: str = ""
-    nas: Union[NAS, None] = None
+    nas: NAS | None = None
     port: str = ""
     service: str = ""
 
     # The remaining fields are populated only for the active session.
-    authdate: Union[datetime.datetime, None] = None
-    adsl_agent_circuit_id: Union[str, None] = None
-    adsl_agent_remote_id: Union[str, None] = None
-    calling_station: Union[str, None] = None
-    called_station: Union[str, None] = None
+    authdate: datetime.datetime | None = None
+    adsl_agent_circuit_id: str | None = None
+    adsl_agent_remote_id: str | None = None
+    calling_station: str | None = None
+    called_station: str | None = None
 
 
 class RadiusSessions(BaseModel):
@@ -44,7 +43,7 @@ class RadiusSessions(BaseModel):
     A list of RADIUS sessions, with an indication of whether more are available.
     """
 
-    sessions: List[RadiusSession]
+    sessions: list[RadiusSession]
     more: bool
 
 
@@ -69,19 +68,19 @@ class RadiusUser(BaseModel):
 
     username: str
     password: str
-    ip_address: Union[ipaddress.IPv4Address, None] = None
-    routes: Union[List[ipaddress.IPv4Network], None] = None
-    rate_limit: Union[RateLimit, None] = None
+    ip_address: ipaddress.IPv4Address | None = None
+    routes: list[ipaddress.IPv4Network | ipaddress.IPv6Network] | None = None
+    rate_limit: RateLimit | None = None
     disabled: bool = False
     suspended: bool = False
-    profile: Union[str, None] = None
-    ipv6_address: Union[ipaddress.IPv6Address, None] = None
-    delegated_prefix: Union[ipaddress.IPv6Network, None] = None
-    vrf: Union[str, None] = None
+    profile: str | None = None
+    ipv6_address: ipaddress.IPv6Address | None = None
+    delegated_prefix: ipaddress.IPv6Network | None = None
+    vrf: str | None = None
 
-    active_session: Union[RadiusSession, None] = None
+    active_session: RadiusSession | None = None
 
-    error: Union[str, None] = None
+    error: str | None = None
 
     @model_validator(mode="after")
     def valid_active_session(self):
@@ -90,13 +89,30 @@ class RadiusUser(BaseModel):
             assert self.active_session.username == self.username
         return self
 
+    @model_validator(mode="after")
+    def valid_delegated_prefix(self):
+        dp: ipaddress.IPv6Network | None = self.delegated_prefix
+        if dp:
+            assert dp.prefixlen == 56
+        return self
+
+    @model_validator(mode="after")
+    def valid_routes(self):
+        routes: list[ipaddress.IPv4Network | ipaddress.IPv6Network] | None = self.routes
+        for route in map(ipaddress.ip_network, routes or []):
+            if route.version == 4:
+                assert 24 <= route.prefixlen <= 31
+            else:
+                assert 48 <= route.prefixlen <= 64
+        return self
+
 
 class RadiusUsers(BaseModel):
     """
     A list of users, and a flag to indicate that more are available.
     """
 
-    users: List[RadiusUser]
+    users: list[RadiusUser]
     more: bool = False
 
 
@@ -126,7 +142,7 @@ class Traffic(BaseModel):
 
     username: str
     period: PeriodEnum
-    traffic: List[TrafficEntry]
+    traffic: list[TrafficEntry]
 
 
 class FrequentUser(BaseModel):
@@ -143,7 +159,7 @@ class FrequentUsers(BaseModel):
     A collection of `FrequentUser`s.
     """
 
-    users: List[FrequentUser]
+    users: list[FrequentUser]
 
 
 class NASSessions(BaseModel):
@@ -160,7 +176,7 @@ class AllSessions(BaseModel):
     All NAS with their session counts.
     """
 
-    servers: List[NASSessions]
+    servers: list[NASSessions]
 
 
 class RareUser(BaseModel):
@@ -170,8 +186,8 @@ class RareUser(BaseModel):
 
     username: str
     ip_address: ipaddress.IPv4Address
-    last_login: Union[datetime.datetime, None]
-    last_logout: Union[datetime.datetime, None]
+    last_login: datetime.datetime | None
+    last_logout: datetime.datetime | None
 
 
 class RareUsers(BaseModel):
@@ -179,7 +195,7 @@ class RareUsers(BaseModel):
     A collection of `RareUser`s.
     """
 
-    users: List[RareUser]
+    users: list[RareUser]
 
 
 class SessionList(BaseModel):
@@ -188,7 +204,7 @@ class SessionList(BaseModel):
     body (no need to send the complete objects).
     """
 
-    ids: List[str]
+    ids: list[str]
 
 
 class TopTrafficEntry(BaseModel):
@@ -197,7 +213,7 @@ class TopTrafficEntry(BaseModel):
     """
 
     # The username is None for percentile values.
-    username: Union[str, None] = None
+    username: str | None = None
     download: int
     upload: int
 
@@ -207,7 +223,7 @@ class TopTraffic(BaseModel):
     A list of the top-n heavy users, as well as 95th and 80th percentile values.
     """
 
-    entries: List[TopTrafficEntry]
+    entries: list[TopTrafficEntry]
     pct95: TopTrafficEntry
     pct80: TopTrafficEntry
 
@@ -217,7 +233,7 @@ class FreeAddress(BaseModel):
     A spare IP address (if any), and the number of available addresses.
     """
 
-    address: Union[ipaddress.IPv4Address, None]
+    address: ipaddress.IPv4Address | None
     free: int
 
 
@@ -227,11 +243,11 @@ class AddressUsage(BaseModel):
     """
 
     address: ipaddress.IPv4Address
-    username: Union[str, None] = None
-    subnet: Union[ipaddress.IPv4Network, None] = None
+    username: str | None = None
+    subnet: ipaddress.IPv4Network | None = None
     # Age: number of days since last logged in. Zero means logged in now;
     # None means 'never'.
-    age: Union[int, None] = None
+    age: int | None = None
 
 
 class NetworkUsage(BaseModel):
@@ -239,7 +255,7 @@ class NetworkUsage(BaseModel):
     How the addresses in a CIDR network are allocated.
     """
 
-    addresses: List[AddressUsage]
+    addresses: list[AddressUsage]
 
 
 class SNMPDetails(BaseModel):
@@ -257,7 +273,7 @@ class SNMPDetails(BaseModel):
     """
 
     rate: bool
-    bytes_in: Union[str, None] = None
-    bytes_out: Union[str, None] = None
-    packets_in: Union[str, None] = None
-    packets_out: Union[str, None] = None
+    bytes_in: str | None = None
+    bytes_out: str | None = None
+    packets_in: str | None = None
+    packets_out: str | None = None

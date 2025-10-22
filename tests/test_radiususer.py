@@ -63,17 +63,34 @@ def test_route_formats():
             username="user", password="secret", delegated_prefix="2a02:3d8:1::1/56"
         )
 
+    # Not a valid prefix.
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", routes=["2a02:3d8:1::1/48"])
+
+    # Prefix too big.
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", routes=["1.2.3.0/23"])
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", routes=["2a02:3d8:1::/47"])
+
+    # Prefix too small.
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", routes=["1.2.3.0/32"])
+    with pytest.raises(ValidationError):
+        ru = RadiusUser(username="user", password="secret", routes=["2a02:3d8:1::/65"])
+
     ru = RadiusUser(username="user", password="secret", routes=[])
     assert not ru.routes
 
     ru = RadiusUser(
         username="user",
         password="secret",
-        routes=["1.2.3.4/30", ipaddress.IPv4Network("1.2.3.4/30")],
+        routes=["1.2.3.4/30", ipaddress.IPv4Network("1.2.3.4/30"), "2a02:3d8:2:0::/48"],
         delegated_prefix="2a02:3d8:1::0/56",
     )
     assert ru.routes[0] == ru.routes[1]
-    assert ru.delegated_prefix == ipaddress.IPv6Network("2a02:3d8:1:0::/56")
+    assert ru.delegated_prefix == ipaddress.IPv6Network("2a02:3d8:1::/56")
+    assert ru.routes[2] == ipaddress.IPv6Network("2a02:3d8:2::/48")
 
 
 def test_no_rate_limit():
@@ -129,7 +146,6 @@ def test_list():
 
 
 def test_with_active_session():
-
     # The active_session has to actually be a RadiusSession.
     with pytest.raises(ValidationError):
         _ = RadiusUser(username="user", password="secret", active_session="invalid")
