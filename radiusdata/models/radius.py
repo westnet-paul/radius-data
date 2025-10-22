@@ -93,7 +93,7 @@ class RadiusUser(BaseModel):
     def valid_delegated_prefix(self):
         dp: ipaddress.IPv6Network | None = self.delegated_prefix
         if dp:
-            assert dp.prefixlen == 56
+            assert ipaddress.IPv6Network(dp).prefixlen == 56
         return self
 
     @model_validator(mode="after")

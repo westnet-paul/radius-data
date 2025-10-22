@@ -1,9 +1,12 @@
-VERSION := `uv version`
-
-all: test git-tag git-push
+VERSION := `uv version | cut -d' ' -f2`
+	
+all: test git-status git-tag git-push
 
 test:
 	python -m pytest --cov radiusdata --cov-report html:htmlcov
+
+git-status:
+	[[ -z "$(git status -s)" ]]
 
 git-tag:
 	[ -z `git tag | grep "^{{VERSION}}$$"` ] && \
