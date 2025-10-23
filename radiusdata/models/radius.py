@@ -101,7 +101,7 @@ class RadiusUser(BaseModel):
         routes: list[ipaddress.IPv4Network | ipaddress.IPv6Network] | None = self.routes
         for route in map(ipaddress.ip_network, routes or []):
             if route.version == 4:
-                assert 24 <= route.prefixlen <= 31
+                assert 24 <= route.prefixlen
             else:
                 assert 48 <= route.prefixlen <= 64
         return self

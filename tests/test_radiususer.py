@@ -75,8 +75,6 @@ def test_route_formats():
 
     # Prefix too small.
     with pytest.raises(ValidationError):
-        ru = RadiusUser(username="user", password="secret", routes=["1.2.3.0/32"])
-    with pytest.raises(ValidationError):
         ru = RadiusUser(username="user", password="secret", routes=["2a02:3d8:1::/65"])
 
     ru = RadiusUser(username="user", password="secret", routes=[])
